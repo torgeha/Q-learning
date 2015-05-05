@@ -22,10 +22,39 @@ class FileReaderAndFormatter:
         self._read_and_format()
 
     def _read_and_format(self):
-        # String of file content
+        # TODO: comment and cleanup
+
+        # Read file and convert to list
         file_content = self._read_file()
 
+        # Replace whitespace with comma
+        no_whitespace = file_content.replace(' ', ',')
 
+        # print(no_whitespace)
+        # Split the string into lines
+        lines_separated = no_whitespace.splitlines()
+        # print("split: ", lines_separated)
+
+        # Convert from string list to int list
+        properly_formatted = []
+        for line in lines_separated:
+            properly_formatted.append(list(eval(line)))
+        # print(properly_formatted)
+
+        # Extract first line of paramteres
+        self.w = properly_formatted[0][0]
+        self.h = properly_formatted[0][1]
+        self.x = properly_formatted[0][2]
+        self.y = properly_formatted[0][3]
+        self.n = properly_formatted[0][4]
+
+        # print(self.w)
+        # print(self.h)
+        # print(self.x)
+        # print(self.y)
+        # print(self.n)
+
+        self.board = properly_formatted[1:]
 
     def _read_file(self):
         # If path is not provided, open filedialog. Return String in file
@@ -36,13 +65,20 @@ class FileReaderAndFormatter:
             r.withdraw()
 
             # Open filedialog
-            path = tkinter.filedialog.askopenfilename(initialdir="C:\\Users\\Torgeir\\Dropbox\\AI-subsymbolsk\\project5\\Q-learning\\res")
-
+            self.path = tkinter.filedialog.askopenfilename(initialdir="C:\\Users\\Torgeir\\Dropbox\\AI-subsymbolsk\\project5\\Q-learning\\res")
+        raw_content = None
         with open(self.path, 'r') as f:
-            data = f.read()
-            print(data)
-            print(type(data))
+            raw_content = f.read()
+            # print(raw_content)
+        return raw_content
 
+# TODO: Remove testing
 # Testing
-fr = FileReaderAndFormatter("C:\\Users\\Torgeir\\Dropbox\\AI-subsymbolsk\\project5\\Q-learning\\res\\1-simple.txt")
-
+# fr = FileReaderAndFormatter("C:\\Users\\Torgeir\\Dropbox\\AI-subsymbolsk\\project5\\Q-learning\\res\\1-simple.txt")
+fr = FileReaderAndFormatter()
+print(fr.w)
+print(fr.h)
+print(fr.x)
+print(fr.y)
+print(fr.n)
+print(fr.board)
