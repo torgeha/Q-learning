@@ -12,7 +12,7 @@ from ann import Network
 
 class FlatlandSimulation(Tk):
 
-    def __init__(self, phenotype_weights, board, agent):
+    def __init__(self, board, agent):
         Tk.__init__(self)
 
         # Arrows should not work if algorithm mode
@@ -62,60 +62,6 @@ class FlatlandSimulation(Tk):
     def quit(self, event):
         sys.exit(0)
 
-    # def solve_2048(self):
-    #     """
-    #     Called when the minimax algorithm should start.
-    #     """
-    #
-    #     depth = 4
-    #
-    #     def callback():
-    #         ct = int(round(time.time() * 1000))
-    #         self.canvas_flatland.start_drawing()
-    #         s = Search(depth)
-    #         s.subscribe(self)
-    #         s.minimax_search()
-    #         self.canvas_flatland.stop_drawing()
-    #
-    #         # Calculate runtime
-    #         dt = int(round(time.time() * 1000))
-    #         print("Runtime: ", (dt - ct) / 1000, "secs")
-    #
-    #     t = threading.Thread(target=callback)
-    #     t.daemon = True
-    #     t.start()
-
-
-    # def move(self, event=None):
-    #     """
-    #     Get the keycode for the arrow pressed. Used to play manually.
-    #     """
-    #
-    #     dir = repr(event.keycode)
-    #
-    #     if dir == '37':
-    #         dir = "left"
-    #     elif dir == '38':
-    #         dir = "up"
-    #     elif dir == '39':
-    #         dir = "right"
-    #     elif dir == '40':
-    #         dir = "down"
-    #     else:
-    #         return
-    #     # print(dir)
-    #
-    #     cells = self.model.move(dir)
-    #     # print(cells)
-    #     print(self.model)
-    #
-    #     self.canvas_flatland.set_board(cells)
-    #
-    # def notify(self, node):
-    #     """
-    #     Method needed as an observer. Called from the Observable when a property_change has occurred.
-    #     """
-    #     self.moves_queue.append(node)
 
 class CanvasFlatland(Canvas):
     """
@@ -125,7 +71,7 @@ class CanvasFlatland(Canvas):
 
     def __init__(self, parent, width, height, bg):
 
-        self.timesteps = 60
+        # self.timesteps = 60
         self.width = width
         self.height = height
         self.parent = parent

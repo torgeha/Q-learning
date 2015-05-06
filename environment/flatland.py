@@ -49,6 +49,10 @@ class Agent:
         self.poison_eaten = 0
         self.steps_taken = 0
 
+    def is_done(self):
+        # Return true if postiton == goal position
+        return self.pos == self.goal_position
+
     def move(self, direction):
         # direction = n,e,s,w / 0,1,2,3
         # Returns board content in the cell it arrives at.
