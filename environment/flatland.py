@@ -24,18 +24,18 @@ class World:
 
 class Agent:
 
-    def __init__(self, world, start_position, goal_position):
+    def __init__(self, world, start_position, total_food):
         """
         Heading = 0,1,2,3 (n,e,s,w)
         """
         self.start_pos = start_position
         self.pos = self.start_pos
-        self.goal_position = goal_position
         self.world = world
 
-        # TODO: If same agent-instance for all learning scenarios, reset these
+        self.total_food = total_food
         self.visited = {}
         self.poison_eaten = 0
+        self.food_eaten = 0
         self.steps_taken = 0
 
         # Update the visited map
@@ -47,11 +47,12 @@ class Agent:
         self.pos = self.start_pos
         self.visited = {}
         self.poison_eaten = 0
+        self.food_eaten = 0
         self.steps_taken = 0
 
     def is_done(self):
-        # Return true if postiton == goal position
-        return self.pos == self.goal_position
+        # Return true if at start_position and all food is eaten
+        return self.food_eaten == self.total_food and self.pos == self.start_pos
 
     def move(self, direction):
         # direction = n,e,s,w / 0,1,2,3
@@ -72,7 +73,24 @@ class Agent:
 
         self.steps_taken += 1
 
-        return self._check_for_food_and_poison()
+        board_value = self._check_for_food_and_poison()
+        self._update_stats(board_value)
+        return board_value
+
+    def _update_stats(self, board_value):
+        # At start position
+        if board_value == -2:
+            return
+        # Poison eaten
+        elif board_value == -1:
+            self.poison_eaten += 1
+        # Empty cell
+        elif board_value == 0:
+            return
+        # Food eaten
+        elif board_value > 0:
+            self.food_eaten += 1
+
 
     def _check_for_food_and_poison(self):
         # Check for food and poison, keep track of where agent has been

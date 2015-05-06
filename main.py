@@ -25,7 +25,7 @@ class FlatlandQLearner:
                 action = self.q_learner.get_action()
 
                 # Update game
-                self.agent.move(action)
+                board_value = self.agent.move(action)
 
                 # State after doing action in game
                 state = self.agent.get_state()
@@ -37,9 +37,32 @@ class FlatlandQLearner:
                 self.q_learner.update_q(state, action, reward)
 
 
+import sys
 
 if __name__ == "__main__":
 
     # TODO: take parameters from commandline
-    app = FlatlandQLearner()
+
+    # Can sepcify path here
+    buffer = FileReaderAndFormatter()
+
+    w = World(buffer.board, (buffer.w, buffer.h))
+    a = Agent(w, (buffer.x, buffer.y), buffer.n)
+
+    gui = FlatlandSimulation(buffer.board, (buffer.w, buffer.h), a)
+    gui.mainloop()
+
+
+    sys.exit()
+
+    # TODO: take these as parameters?
+    alpha = 0.1
+    gamma = 0.1
+    epsilon = 0.1
+    nof_iterations = 100
+
+    ql = QLearner(["n", "e", "s", "w"], alpha, gamma, epsilon)
+
+
+    app = FlatlandQLearner(w, a, ql, nof_iterations)
     app.run()

@@ -6,28 +6,18 @@ import random
 import numpy as np
 from tkinter import *
 from collections import deque
-from phenotypes import FlatlandPhenotype
-from ann import Network
-
 
 class FlatlandSimulation(Tk):
 
-    def __init__(self, board, agent):
+    def __init__(self, board, dimension, agent):
         Tk.__init__(self)
 
-        # Arrows should not work if algorithm mode
-        # self.bind_all("<Left>", self.move)
-        # self.bind_all("<Up>", self.move)
-        # self.bind_all("<Down>", self.move)
-        # self.bind_all("<Right>", self.move)
         self.bind_all("<q>", self.quit)
         self.bind_all("<Escape>", self.quit)
 
-        self.ann = Network([6,0,3])
-
         self.board = board
+        self.dimension = dimension
         self.agent = agent
-        self.phenotype_weights = phenotype_weights
         self.refresh_rate = 1
 
         # Init canvas
@@ -39,21 +29,16 @@ class FlatlandSimulation(Tk):
         run_btn.grid(row=6, column=0, rowspan=1, columnspan=2, sticky=W)
 
         # Speed slider
-        # TODO add slider that controlls refresh rate!
         self.refresh_slider = Scale(self, from_=0, to=999, width=20, orient=HORIZONTAL, command=self.set_refresh_value)
         self.refresh_slider.set(self.refresh_rate)
         self.refresh_slider.grid(row=6, column=2, rowspan=1, columnspan=4, sticky=E)
 
-
-        self.moves_queue = deque() # TODO is this the right data structure?
-
-        # print(self.model)
+        # self.moves_queue = deque() # TODO is this the right data structure?
 
     def set_refresh_value(self, value):
         self.refresh_rate = 1000 - self.refresh_slider.get()
 
     def start_simulation(self):
-        # TODO: called when run button is pressed, starts the simulation
         print("Simulation started")
 
         self.canvas_flatland.start_drawing() # Will draw until draw_queue is empty
@@ -82,8 +67,8 @@ class CanvasFlatland(Canvas):
         self.agent_last_pos = parent.agent.pos
 
         self.offset = 3
-        self.size = 10
-        self.cell_size = (self.width) / self.size
+        # self.size = 10
+        self.cell_size = (self.width) / self.parent.dimension[0]
 
         # self.colors = {0: "#CBC2B3",
         #                2: ("#EEE6DB", "#767267", 40),
@@ -163,15 +148,23 @@ class CanvasFlatland(Canvas):
         Set value for cell x, y
         """
 
-        rect, text = self.graphics_dict[str(x) + str(y)]
+        rect, text = self.graphics_dict[str(x) + "-" + str(y)]
 
         # Special case for drawing agent
-        if value == 3:
-            self.itemconfig(rect, fill=self.colors[value][0])
-            self.itemconfig(text, fill="#767267", text=self.colors[value][1][self.parent.agent.heading], font=("Consolas", 40))
-            return
+        # if value == 3:
+        #     self.itemconfig(rect, fill=self.colors[value][0])
+        #     # self.itemconfig(text, fill="#767267", text=self.colors[value][1][self.parent.agent.heading], font=("Consolas", 40))
+        #     return
 
-        self.itemconfig(rect, fill=self.colors[value])
+        if value > 0:
+            self.itemconfig(rect, fill=self.colors[1])
+        elif value == -3:
+            self.itemconfig(rect, fill=self.colors[3][0])
+        elif value == -1:
+            self.itemconfig(rect, fill=self.colors[2])
+        elif value == -2:
+            return
+        # self.itemconfig(rect, fill=self.colors[value])
 
     def draw_grid(self):
         """
@@ -181,19 +174,18 @@ class CanvasFlatland(Canvas):
         # print("createing this:", self.parent.board)
 
         # Populate graphics dict
-        for y in range(self.size):
-            for x in range(self.size):
-                # TODO: can i remove self.drawtext?
-                self.graphics_dict[str(x) + str(y)] = (self.draw_cell(x, y), self.draw_text(x, y))
+        for y in range(self.parent.dimension[1]):
+            for x in range(self.parent.dimension[0]):
+                self.graphics_dict[str(x) + "-" + str(y)] = (self.draw_cell(x, y), self.draw_text(x, y))
                 # self.graphics_dict[str(x) + str(y)] = (self.draw_cell(x, y))
 
         # Set board values on grid
-        for x in range(len(self.parent.board)):
-            for y in range(len(self.parent.board)):
+        for y in range(self.parent.dimension[1]):
+            for x in range(self.parent.dimension[0]):
                 self.set_cell(x, y, self.parent.board[y][x])
 
         # Set agent initial position
-        self.set_cell(self.parent.agent.start_pos[0], self.parent.agent.start_pos[1], 3)
+        self.set_cell(self.parent.agent.start_pos[0], self.parent.agent.start_pos[1], -3)
 
     def draw_cell(self, x, y):
         # Check if given params are inside grid dimensions
@@ -224,7 +216,6 @@ class CanvasFlatland(Canvas):
 # START A RANDOM SCENARIO
 #-------------------------
 
-from flatland import World, Agent
 
 # board = [[2, 1, 2, 2, 0, 0, 0, 0, 0, 2], [1, 0, 0, 0, 1, 1, 0, 1, 1, 2], [1, 1, 2, 0, 1, 0, 0, 1, 1, 1], [1, 0, 0, 2, 0, 0, 2, 0, 0, 0], [2, 1, 0, 0, 2, 0, 0, 2, 0, 0], [1, 0, 1, 0, 0, 0, 0, 0, 1, 0], [0, 1, 2, 0, 0, 0, 0, 2, 1, 1], [0, 2, 0, 0, 0, 2, 1, 2, 1, 0], [1, 2, 1, 1, 0, 0, 2, 1, 0, 1], [1, 1, 0, 0, 2, 2, 0, 2, 1, 0]]
 #

@@ -75,10 +75,10 @@ class FileReaderAndFormatter:
 # TODO: Remove testing
 # Testing
 # fr = FileReaderAndFormatter("C:\\Users\\Torgeir\\Dropbox\\AI-subsymbolsk\\project5\\Q-learning\\res\\1-simple.txt")
-fr = FileReaderAndFormatter()
-print(fr.w)
-print(fr.h)
-print(fr.x)
-print(fr.y)
-print(fr.n)
-print(fr.board)
+# fr = FileReaderAndFormatter()
+# print(fr.w)
+# print(fr.h)
+# print(fr.x)
+# print(fr.y)
+# print(fr.n)
+# print(fr.board)
