@@ -1,12 +1,24 @@
 
-import random
-import math
+import collections
 
 class World:
 
     def __init__(self, board, dimension):
         self.dimension = dimension
         self.board = board
+        self.foods_eaten = None # Ordered Dict
+        self._init_foods()
+
+    def _init_foods(self):
+        # Populate map with all food on board. False since it is not eaten yet.
+        # TODO: can use id of food instead
+        d = {}
+        for y in range(self.dimension[1]):
+            for x in range(self.dimension[0]):
+                if self.get_cell_content(x, y) > 0:
+                    key = str(x) + "-" + str(y)
+                    d[key] = False
+        self.foods_eaten = collections.OrderedDict(sorted(d.items(), key=lambda t: t[0]))
 
     def get_cell_content(self, x, y):
         # Return content of cell. Supports world wrap-around.
@@ -54,6 +66,18 @@ class Agent:
         # Return true if at start_position and all food is eaten
         return self.food_eaten == self.total_food and self.pos == self.start_pos
 
+    def get_state(self):
+        # Return current state. State consist of position and food eaten
+        s = ""
+        s += str(self.pos[0]) + "-" + str(self.pos[1]) + ":"
+        # print(self.world.foods_eaten)
+        for v in self.world.foods_eaten.values():
+            if v:
+                s += "1"
+            elif not v:
+                s += "0"
+        return s
+
     def move(self, direction):
         # direction = n,e,s,w / 0,1,2,3
         # Returns board content in the cell it arrives at.
@@ -90,15 +114,17 @@ class Agent:
         # Food eaten
         elif board_value > 0:
             self.food_eaten += 1
+            key = str(self.pos[0]) + "-" + str(self.pos[1])
+            self.world.foods_eaten[key] = True
 
 
     def _check_for_food_and_poison(self):
         # Check for food and poison, keep track of where agent has been
         key = str(self.pos[0]) + "-" + str(self.pos[1])
         if key in self.visited.keys():
-            return
+            return 0
 
-        # Get content of agents position and return it
+        # Get content of agent's position and return it
         board_val = self.world.get_cell_content(self.pos[0], self.pos[1])
         self.visited[key] = True
         return board_val

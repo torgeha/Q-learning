@@ -18,24 +18,59 @@ class FlatlandQLearner:
         # TODO: main loop of the flatland q-learner
 
         for k in range(self.nof_iterations):
-            # TODO: Restart scenario
+
+            # Reset scenario
+            self.restart_scenario()
+
+            state = self.agent.get_state()
 
             while not self.agent.is_done():
+
                 # Select action to do
-                action = self.q_learner.get_action()
+                action = self.q_learner.get_action(state)
 
                 # Update game
                 board_value = self.agent.move(action)
+
+                # Remember previous state, used in updating the Q value
+                state_previous = state
 
                 # State after doing action in game
                 state = self.agent.get_state()
 
                 # Reward after doing action in game
-                # reward = get_reward()
+                reward = self.get_reward(board_value)
 
                 # Update q-values
-                self.q_learner.update_q(state, action, reward)
+                self.q_learner.update_q(state, state_previous, action, reward)
 
+        # Visualize the trained agent
+        # TODO: Reset agent and world?
+
+        self._print_q()
+
+        gui = FlatlandSimulation(self.world.board, (self.world.dimension[0], self.world.dimension[1]), self.agent)
+        gui.mainloop()
+
+    def get_reward(self, board_value):
+        # TODO: Improve
+        if board_value > 0:
+            return 1
+        if board_value == -1:
+            return -1
+        if self.agent.is_done():
+            return 5
+        else:
+            return 0
+
+    def restart_scenario(self):
+        self.world._init_foods()
+        self.agent.reset()
+
+    def _print_q(self):
+        print("Size: ", len(self.q_learner.q))
+        for k, v in self.q_learner.q.items():
+            print(str(k) + ": " + str(v))
 
 import sys
 
@@ -49,11 +84,11 @@ if __name__ == "__main__":
     w = World(buffer.board, (buffer.w, buffer.h))
     a = Agent(w, (buffer.x, buffer.y), buffer.n)
 
-    gui = FlatlandSimulation(buffer.board, (buffer.w, buffer.h), a)
-    gui.mainloop()
-
-
-    sys.exit()
+    # gui = FlatlandSimulation(buffer.board, (buffer.w, buffer.h), a)
+    # gui.mainloop()
+    #
+    #
+    # sys.exit()
 
     # TODO: take these as parameters?
     alpha = 0.1
