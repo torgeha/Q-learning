@@ -9,7 +9,7 @@ from collections import deque
 
 class FlatlandSimulation(Tk):
 
-    def __init__(self, board, dimension, agent):
+    def __init__(self, board, dimension, agent, q_learner):
         Tk.__init__(self)
 
         self.bind_all("<q>", self.quit)
@@ -18,6 +18,7 @@ class FlatlandSimulation(Tk):
         self.board = board
         self.dimension = dimension
         self.agent = agent
+        self.q_learner = q_learner
         self.refresh_rate = 1
 
         # Init canvas
@@ -32,8 +33,6 @@ class FlatlandSimulation(Tk):
         self.refresh_slider = Scale(self, from_=0, to=999, width=20, orient=HORIZONTAL, command=self.set_refresh_value)
         self.refresh_slider.set(self.refresh_rate)
         self.refresh_slider.grid(row=6, column=2, rowspan=1, columnspan=4, sticky=E)
-
-        # self.moves_queue = deque() # TODO is this the right data structure?
 
     def set_refresh_value(self, value):
         self.refresh_rate = 1000 - self.refresh_slider.get()
@@ -94,6 +93,9 @@ class CanvasFlatland(Canvas):
         self.draw_grid()
 
     def start_drawing(self):
+        print("Food: ", self.parent.agent.food_eaten)
+        print("poison: ", self.parent.agent.poison_eaten)
+        print("Steps: ", self.parent.agent.steps_taken)
         self.stopped = False
         self.repaint()
 
@@ -106,27 +108,36 @@ class CanvasFlatland(Canvas):
         Draw loop. Called every 'refresh-rate' milliseconds
         """
 
-        inputs = self.parent.agent.get_inputs()
+        # inputs = self.parent.agent.get_inputs()
 
-        outputs = self.parent.ann.feedforward3(inputs, self.parent.phenotype_weights)
+        # outputs = self.parent.ann.feedforward3(inputs, self.parent.phenotype_weights)
 
-        choice = self._make_choice(outputs)
+        # choice = self._make_choice(outputs)
 
-        self.parent.agent.move(choice)
+        # self.parent.agent.move(choice)
+
+        # get action -> update world (move)
+
+        state = self.parent.agent.get_state()
+
+        action = self.parent.q_learner.get_action(state)
+
+        self.parent.agent.move(action)
 
         # set cell to 0 where agent has been
         self.set_cell(self.agent_last_pos[0], self.agent_last_pos[1], 0)
-        self.set_cell(self.parent.agent.pos[0], self.parent.agent.pos[1], 3)
+        self.set_cell(self.parent.agent.pos[0], self.parent.agent.pos[1], -3)
         self.agent_last_pos = self.parent.agent.pos
 
         refresh_rate = self.parent.refresh_rate
-        if not self.stopped or self.timesteps > 0:
-            self.timesteps -= 1
+        if not self.stopped or not self.parent.agent.is_done():
+            # self.timesteps -= 1
             self.after(refresh_rate, self.repaint)
         else:
-            print("Drawing has stopped")
-            print("food: ", self.parent.agent.food_eaten)
+            print("---------Drawing has stopped---------------")
+            print("Food: ", self.parent.agent.food_eaten)
             print("poison: ", self.parent.agent.poison_eaten)
+            print("Steps: ", self.parent.agent.steps_taken)
 
     def _make_choice(self, outputs):
             l = collections.Counter(outputs)
@@ -162,6 +173,8 @@ class CanvasFlatland(Canvas):
             self.itemconfig(rect, fill=self.colors[3][0])
         elif value == -1:
             self.itemconfig(rect, fill=self.colors[2])
+        elif value == 0:
+            self.itemconfig(rect, fill=self.colors[0])
         elif value == -2:
             return
         # self.itemconfig(rect, fill=self.colors[value])

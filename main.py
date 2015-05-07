@@ -45,11 +45,13 @@ class FlatlandQLearner:
                 self.q_learner.update_q(state, state_previous, action, reward)
 
         # Visualize the trained agent
-        # TODO: Reset agent and world?
-
         self._print_q()
 
-        gui = FlatlandSimulation(self.world.board, (self.world.dimension[0], self.world.dimension[1]), self.agent)
+        # Reset world and agent before visualizing
+        self.world._init_foods()
+        self.agent.reset()
+
+        gui = FlatlandSimulation(self.world.board, (self.world.dimension[0], self.world.dimension[1]), self.agent, self.q_learner)
         gui.mainloop()
 
     def get_reward(self, board_value):
