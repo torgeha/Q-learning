@@ -98,7 +98,7 @@ if __name__ == "__main__":
     epsilon = 0.1
     nof_iterations = 100
 
-    ql = QLearner(["n", "e", "s", "w"], alpha, gamma, epsilon)
+    ql = QLearner([0, 1, 2, 3], alpha, gamma, epsilon) # actions: n, e, s, w
 
 
     app = FlatlandQLearner(w, a, ql, nof_iterations)

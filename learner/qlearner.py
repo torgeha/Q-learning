@@ -55,3 +55,15 @@ class QLearner:
         # Return the highest q-value in state
         return max([self.get_q(state, action) for action in self.actions])
 
+    def get_best_action_index(self, state):
+        # Used for visualization
+
+        best = -1
+        best_index = -1
+        for i in range(len(self.actions)):
+            val = self.get_q(state, self.actions[i])
+            if val > best:
+                best = val
+                best_index = i
+
+        return best_index

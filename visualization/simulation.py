@@ -83,10 +83,10 @@ class CanvasFlatland(Canvas):
         #                2048: ("#BC870B", "#FDFAF3", 30),
         #                4196: ("#BA8B99", "#FDFAF3", 30)} # Dict with colors {int value : String color, string color}
 
-        self.colors = {0: "#CBC2B3",
+        self.colors = {0: ("#CBC2B3", {0: "▲", 1: "▶", 2: "▼", 3: "◀", 4: " "}),
                        1: "green",
                        2: "red",
-                       3: ("blue", {0:"▲", 1:"▶", 2:"▼", 3:"◀"})}
+                       3: "blue"}
 
 
         super().__init__(parent, width=width, height=height, bg=bg, borderwidth=3, relief="sunken")
@@ -120,6 +120,8 @@ class CanvasFlatland(Canvas):
 
         state = self.parent.agent.get_state()
 
+        self._draw_arrows(state)
+
         action = self.parent.q_learner.get_action(state)
 
         self.parent.agent.move(action)
@@ -139,6 +141,19 @@ class CanvasFlatland(Canvas):
             print("poison: ", self.parent.agent.poison_eaten)
             print("Steps: ", self.parent.agent.steps_taken)
 
+    def _draw_arrows(self, state):
+
+        # Extract the food part of the state: e.g "5-3:1" --> "1"
+        position, food_state = state.split(":")
+        open_cells = []
+        for y in range(self.parent.dimension[1]):
+            for x in range(self.parent.dimension[0]):
+                rect, text = self.graphics_dict[str(x) + "-" + str(y)]
+                fill = self.itemcget(rect, "fill")
+                if fill == self.colors[0][0]:
+                    best_action = self.parent.q_learner.get_best_action_index(state)
+                    self.set_cell(x, y, 0, best_action)
+
     def _make_choice(self, outputs):
             l = collections.Counter(outputs)
             # print("outputs", outputs, "l", l)
@@ -154,7 +169,7 @@ class CanvasFlatland(Canvas):
             for y in rg:
                 self.set_cell(x, y, cells[y][x])
 
-    def set_cell(self, x, y, value):
+    def set_cell(self, x, y, value, arrow_value=None):
         """
         Set value for cell x, y
         """
@@ -170,11 +185,15 @@ class CanvasFlatland(Canvas):
         if value > 0:
             self.itemconfig(rect, fill=self.colors[1])
         elif value == -3:
-            self.itemconfig(rect, fill=self.colors[3][0])
+            self.itemconfig(rect, fill=self.colors[3])
         elif value == -1:
             self.itemconfig(rect, fill=self.colors[2])
         elif value == 0:
-            self.itemconfig(rect, fill=self.colors[0])
+            if arrow_value is not None:
+                self.itemconfig(rect, fill=self.colors[0][0])
+                self.itemconfig(text, fill="#767267", text=self.colors[0][1][arrow_value], font=("Consolas", 40))
+            else:
+                self.itemconfig(rect, fill=self.colors[0][0])
         elif value == -2:
             return
         # self.itemconfig(rect, fill=self.colors[value])
@@ -212,7 +231,7 @@ class CanvasFlatland(Canvas):
         pix_y1 = self.cell_size + pix_y0
 
 
-        return self.create_rectangle(pix_x0 + (self.offset + 2), pix_y0 + (self.offset + 2), pix_x1, pix_y1, fill=self.colors[0], outline="#BBADA0", width=self.offset)
+        return self.create_rectangle(pix_x0 + (self.offset + 2), pix_y0 + (self.offset + 2), pix_x1, pix_y1, fill=self.colors[0][0], outline="#BBADA0", width=self.offset)
 
     def draw_text(self, x, y):
         # Check if given params are inside grid dimensions
