@@ -21,8 +21,15 @@ class FlatlandSimulation(Tk):
         self.q_learner = q_learner
         self.refresh_rate = 1
 
+        print("dim", dimension)
+
         # Init canvas
-        self.canvas_flatland = CanvasFlatland(parent=self, width=800, height=800, bg="#BDAD9E")
+
+        height = 800
+        ratio = self.dimension[0] / self.dimension[1]
+        width = height * ratio
+
+        self.canvas_flatland = CanvasFlatland(parent=self, width=width, height=height, bg="#BDAD9E")
         self.canvas_flatland.grid(row=0, column=0, rowspan=3, columnspan=4, sticky=W + N, padx=5, pady=5)
 
         # Start button
@@ -65,9 +72,22 @@ class CanvasFlatland(Canvas):
 
         self.agent_last_pos = parent.agent.pos
 
-        self.offset = 3
+        # Offset and arrow size should be different based on size of board.
+        # Max dimension is (40,20)
+        if self.parent.dimension[1] < 10:
+            self.offset = 4
+            self.arrow_font_size = 40
+        elif self.parent.dimension[1] < 20:
+            self.offset = 2
+            self.arrow_font_size = 30
+        else:
+            self.offset = 1
+            self.arrow_font_size = 20
+        print("off", self.offset)
+        print("font", self.arrow_font_size)
+
         # self.size = 10
-        self.cell_size = (self.width) / self.parent.dimension[0]
+        self.cell_size = (self.height) / self.parent.dimension[1]
 
         # self.colors = {0: "#CBC2B3",
         #                2: ("#EEE6DB", "#767267", 40),
@@ -86,7 +106,8 @@ class CanvasFlatland(Canvas):
         self.colors = {0: ("#CBC2B3", {0: "▲", 1: "▶", 2: "▼", 3: "◀", 4: " "}),
                        1: "green",
                        2: "red",
-                       3: "blue"}
+                       3: "blue",
+                       4: "#66CCFF"}
 
 
         super().__init__(parent, width=width, height=height, bg=bg, borderwidth=3, relief="sunken")
@@ -126,6 +147,11 @@ class CanvasFlatland(Canvas):
 
         # set cell to 0 where agent has been
         self.set_cell(self.agent_last_pos[0], self.agent_last_pos[1], 0)
+
+        # Draw goal cell
+        self.set_cell(self.goal_position[0], self.goal_position[1], -2)
+
+        # Draw new agent position
         self.set_cell(self.parent.agent.pos[0], self.parent.agent.pos[1], -3)
         self.agent_last_pos = self.parent.agent.pos
 
@@ -167,11 +193,11 @@ class CanvasFlatland(Canvas):
                     return 0
             return maximum
 
-    def set_board(self, cells):
-        rg = range(len(cells))
-        for x in rg:
-            for y in rg:
-                self.set_cell(x, y, cells[y][x])
+    # def set_board(self, cells):
+    #     rg = range(len(cells))
+    #     for x in rg:
+    #         for y in rg:
+    #             self.set_cell(x, y, cells[y][x])
 
     def set_cell(self, x, y, value, arrow_value=None):
         """
@@ -190,15 +216,18 @@ class CanvasFlatland(Canvas):
             self.itemconfig(rect, fill=self.colors[1])
         elif value == -3:
             self.itemconfig(rect, fill=self.colors[3])
+            self.itemconfig(text, fill="#767267", text=self.colors[0][1][4], font=("Consolas", self.arrow_font_size))
         elif value == -1:
             self.itemconfig(rect, fill=self.colors[2])
         elif value == 0:
             if arrow_value is not None:
                 self.itemconfig(rect, fill=self.colors[0][0])
-                self.itemconfig(text, fill="#767267", text=self.colors[0][1][arrow_value], font=("Consolas", 40))
+                self.itemconfig(text, fill="#767267", text=self.colors[0][1][arrow_value], font=("Consolas", self.arrow_font_size))
             else:
                 self.itemconfig(rect, fill=self.colors[0][0])
         elif value == -2:
+            self.itemconfig(rect, fill = self.colors[4])
+            self.itemconfig(text, fill="#767267", text=self.colors[0][1][4], font=("Consolas", self.arrow_font_size))
             return
         # self.itemconfig(rect, fill=self.colors[value])
 
@@ -218,7 +247,10 @@ class CanvasFlatland(Canvas):
         # Set board values on grid
         for y in range(self.parent.dimension[1]):
             for x in range(self.parent.dimension[0]):
-                self.set_cell(x, y, self.parent.board[y][x])
+                value = self.parent.board[y][x]
+                if value == -2:
+                    self.goal_position = (x, y)
+                self.set_cell(x, y, value)
 
         # Set agent initial position
         self.set_cell(self.parent.agent.start_pos[0], self.parent.agent.start_pos[1], -3)

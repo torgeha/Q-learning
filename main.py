@@ -106,12 +106,6 @@ if __name__ == "__main__":
     w = World(buffer.board, (buffer.w, buffer.h))
     a = Agent(w, (buffer.x, buffer.y), buffer.n)
 
-    # gui = FlatlandSimulation(buffer.board, (buffer.w, buffer.h), a)
-    # gui.mainloop()
-    #
-    #
-    # sys.exit()
-
     # TODO: take these as parameters?
     alpha = 0.1
     gamma = 0.1
@@ -120,6 +114,9 @@ if __name__ == "__main__":
 
     ql = QLearner([0, 1, 2, 3], alpha, gamma, epsilon) # actions: n, e, s, w
 
+    # gui = FlatlandSimulation(buffer.board, (buffer.w, buffer.h), a, ql)
+    # gui.mainloop()
+    # sys.exit()
 
     app = FlatlandQLearner(w, a, ql, nof_iterations)
     app.run()
