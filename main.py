@@ -19,6 +19,8 @@ class FlatlandQLearner:
 
         for k in range(self.nof_iterations):
 
+            print("K: ", k)
+
             # Reset scenario
             self.restart_scenario()
 
@@ -45,11 +47,13 @@ class FlatlandQLearner:
                 self.q_learner.update_q(state, state_previous, action, reward)
 
         # Visualize the trained agent
-        self._print_q()
+        # self._print_q()
 
         # Reset world and agent before visualizing
         self.world._init_foods()
         self.agent.reset()
+
+        print("Starting Visualization...")
 
         gui = FlatlandSimulation(self.world.board, (self.world.dimension[0], self.world.dimension[1]), self.agent, self.q_learner)
         gui.mainloop()

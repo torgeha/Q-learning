@@ -1,6 +1,7 @@
 __author__ = 'Torgeir'
 
 import random
+import numpy as np
 
 class QLearner:
 
@@ -14,8 +15,37 @@ class QLearner:
         self.epsilon = epsilon
 
     def get_action(self, state):
-        # TODO: Do not return random. IMPROVE
-        return random.choice(self.actions)
+        # Use the q-values for this state as odds of choosing that action.
+        # High q-value gives greater chance for that action being chosen.
+
+        # # Get all q-values
+        # odds = [self.get_q(state, action) for action in self.actions]
+        # # Normalize
+        # odds_sum = sum(odds)
+        # if odds_sum != 0:
+        #     for o in odds:
+        #         o /= odds_sum
+        # else:
+        #     odds = [0.25, 0.25, 0.25, 0.25]
+        # # Choose
+        # action = np.random.choice(self.actions, p=odds)
+
+        # TODO: Strictly greedy, must improve
+        q_values = [self.get_q(state, a) for a in self.actions]
+        max_q = max(q_values)
+        count = q_values.count(max_q)
+        if count > 1:
+            best_q = [i for i in range(len(self.actions)) if q_values[i] == max_q]
+            i = random.choice(best_q)
+        else:
+            i = q_values.index(max_q)
+
+        action = self.actions[i]
+        return action
+
+
+
+        return action
 
     def get_q(self, state, action):
         # Return the value that corresponds to the state, action pair.
