@@ -1,5 +1,6 @@
 
 import collections
+import logging
 
 class World:
 
@@ -64,6 +65,7 @@ class Agent:
 
     def is_done(self):
         # Return true if at start_position and all food is eaten
+        # logging.info("---- is done?")
         return self.food_eaten == self.total_food and self.pos == self.start_pos
 
     def get_state(self):

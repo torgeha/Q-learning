@@ -2,6 +2,7 @@ __author__ = 'Torgeir'
 
 import random
 import numpy as np
+import logging
 
 class QLearner:
 
@@ -43,10 +44,6 @@ class QLearner:
         action = self.actions[i]
         return action
 
-
-
-        return action
-
     def get_q(self, state, action):
         # Return the value that corresponds to the state, action pair.
         # State should be hashable
@@ -65,8 +62,12 @@ class QLearner:
         # Create key
         # update_key = (state_previous, action)
 
+        # logging.info("--- in update Q")
+
         # Do calculation
         q_temp = self.get_q(state_previous, action)
+
+        # logging.info("--- found q_temp")
 
         # print("q_temp", q_temp)
         # print("a", self.alpha)
@@ -76,9 +77,11 @@ class QLearner:
 
         temp = self.alpha * (reward + (self.gamma * self._get_best_action(state_current)) - q_temp)
         q_value = q_temp + temp
+        # logging.info("--- q_value is computed")
 
         # Update q map
         self.set_q(state_previous, action, q_value)
+        # logging.info("--- q value is set, done...")
         # self.q[update_key] = q_value
 
     def _get_best_action(self, state):

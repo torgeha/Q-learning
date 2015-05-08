@@ -2,6 +2,8 @@ __author__ = 'Torgeir'
 
 import sys
 
+import logging
+
 from environment.flatland import World, Agent
 from filereader.filereader import FileReaderAndFormatter
 from learner.qlearner import QLearner
@@ -18,10 +20,12 @@ class FlatlandQLearner:
 
     def run(self):
         # TODO: main loop of the flatland q-learner
+        logging.basicConfig(filename='log.log', filemode='w', level=logging.INFO)
 
         for k in range(self.nof_iterations):
 
             print("K: ", k)
+            logging.info("---- " + str(k) + " ------")
 
             # Reset scenario
             self.restart_scenario()
@@ -30,23 +34,34 @@ class FlatlandQLearner:
 
             while not self.agent.is_done():
 
+                # logging.info(str(k) + "- Start while")
+
                 # Select action to do
                 action = self.q_learner.get_action(state)
-
+                # print("- action found")
+                # logging.info(str(k) + "- Action found")
                 # Update game
                 board_value = self.agent.move(action)
+                # print("- Agent moved")
+                # logging.info(str(k) + "- Agent moved")
 
                 # Remember previous state, used in updating the Q value
                 state_previous = state
 
                 # State after doing action in game
                 state = self.agent.get_state()
+                # print("- State retrieved")
+                # logging.info(str(k) + "- State retrieved")
 
                 # Reward after doing action in game
                 reward = self.get_reward(board_value)
+                # print("- Reward gotten")
+                # logging.info(str(k) + "- Reward gotten")
 
                 # Update q-values
                 self.q_learner.update_q(state, state_previous, action, reward)
+                # print("- Updated q")
+                # logging.info(str(k) + "- Updated q")
 
         # Visualize the trained agent
         # self._print_q()
@@ -70,7 +85,7 @@ class FlatlandQLearner:
         if self.agent.is_done():
             return 5
         else:
-            return 0
+            return -0.01
 
     def restart_scenario(self):
         self.world._init_foods()
@@ -80,7 +95,6 @@ class FlatlandQLearner:
         print("Size: ", len(self.q_learner.q))
         for k, v in self.q_learner.q.items():
             print(str(k) + ": " + str(v))
-
 
 if __name__ == "__main__":
 
