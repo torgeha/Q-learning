@@ -3,6 +3,7 @@ __author__ = 'Torgeir'
 import sys
 
 import logging
+import time
 
 from environment.flatland import World, Agent
 from filereader.filereader import FileReaderAndFormatter
@@ -19,12 +20,19 @@ class FlatlandQLearner:
         self.nof_iterations = nof_iterations
 
     def run(self):
-        # TODO: main loop of the flatland q-learner
+        # Main loop of the flatland q-learner
         logging.basicConfig(filename='log.log', filemode='w', level=logging.INFO)
+
+        # Time the run
+        start = time.time()
 
         for k in range(self.nof_iterations):
 
-            print("K: ", k, ", food eaten: ", str(self.agent.food_eaten), ", poison eaten: ", str(self.agent.poison_eaten), ", steps: " + str(self.agent.steps_taken))
+            # Print progression to console
+            print("K: ", k,
+                  ",\t food eaten: ", str(self.agent.food_eaten),
+                  ",\t poison eaten: ", str(self.agent.poison_eaten),
+                  ",\t steps: " + str(self.agent.steps_taken))
             # logging.info("---- " + str(k) + " ------")
 
             # Reset scenario
@@ -65,6 +73,10 @@ class FlatlandQLearner:
 
         # Visualize the trained agent
         # self._print_q()
+
+        # Print runtime
+        end = time.time()
+        print("Runtime: ", end - start, " s. or ", ((end - start) / 60), " min.")
 
         # Reset world and agent before visualizing
         self.world._init_foods()
@@ -110,7 +122,7 @@ if __name__ == "__main__":
     alpha = 0.1
     gamma = 0.1
     epsilon = 0.1
-    nof_iterations = 3000
+    nof_iterations = 4000
 
     ql = QLearner([0, 1, 2, 3], alpha, gamma, epsilon) # actions: n, e, s, w
 
