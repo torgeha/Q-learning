@@ -31,17 +31,28 @@ class QLearner:
         # # Choose
         # action = np.random.choice(self.actions, p=odds)
 
-        # TODO: Strictly greedy, must improve
+        # Choose a weighted random action if random < epsilon
         q_values = [self.get_q(state, a) for a in self.actions]
         max_q = max(q_values)
-        count = q_values.count(max_q)
-        if count > 1:
-            best_q = [i for i in range(len(self.actions)) if q_values[i] == max_q]
-            i = random.choice(best_q)
+        if random.random() < self.epsilon:
+            best_actions = [i for i in range(len(self.actions)) if q_values[i] == max_q]
+            i = random.choice(best_actions)
         else:
             i = q_values.index(max_q)
-
         action = self.actions[i]
+        return action
+
+        # # TODO: Strictly greedy, must improve
+        # q_values = [self.get_q(state, a) for a in self.actions]
+        # max_q = max(q_values)
+        # count = q_values.count(max_q)
+        # if count > 1:
+        #     best_q = [i for i in range(len(self.actions)) if q_values[i] == max_q]
+        #     i = random.choice(best_q)
+        # else:
+        #     i = q_values.index(max_q)
+        #
+        # action = self.actions[i]
         return action
 
     def get_q(self, state, action):

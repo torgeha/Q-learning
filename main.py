@@ -24,8 +24,8 @@ class FlatlandQLearner:
 
         for k in range(self.nof_iterations):
 
-            print("K: ", k)
-            logging.info("---- " + str(k) + " ------")
+            print("K: ", k, ", food eaten: ", str(self.agent.food_eaten), ", poison eaten: ", str(self.agent.poison_eaten), ", steps: " + str(self.agent.steps_taken))
+            # logging.info("---- " + str(k) + " ------")
 
             # Reset scenario
             self.restart_scenario()
@@ -110,7 +110,7 @@ if __name__ == "__main__":
     alpha = 0.1
     gamma = 0.1
     epsilon = 0.1
-    nof_iterations = 100
+    nof_iterations = 3000
 
     ql = QLearner([0, 1, 2, 3], alpha, gamma, epsilon) # actions: n, e, s, w
 
