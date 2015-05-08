@@ -120,8 +120,6 @@ class CanvasFlatland(Canvas):
 
         state = self.parent.agent.get_state()
 
-        self._draw_arrows(state)
-
         action = self.parent.q_learner.get_action(state)
 
         self.parent.agent.move(action)
@@ -130,6 +128,10 @@ class CanvasFlatland(Canvas):
         self.set_cell(self.agent_last_pos[0], self.agent_last_pos[1], 0)
         self.set_cell(self.parent.agent.pos[0], self.parent.agent.pos[1], -3)
         self.agent_last_pos = self.parent.agent.pos
+
+        # Draw arrows showing best action
+        state = self.parent.agent.get_state()
+        self._draw_arrows(state)
 
         refresh_rate = self.parent.refresh_rate
         if not self.stopped or not self.parent.agent.is_done():
@@ -151,7 +153,9 @@ class CanvasFlatland(Canvas):
                 rect, text = self.graphics_dict[str(x) + "-" + str(y)]
                 fill = self.itemcget(rect, "fill")
                 if fill == self.colors[0][0]:
-                    best_action = self.parent.q_learner.get_best_action_index(state)
+                    # Get state of this cell
+                    cell_state = str(x) + "-" + str(y) + ":" + food_state
+                    best_action = self.parent.q_learner.get_best_action_index(cell_state)
                     self.set_cell(x, y, 0, best_action)
 
     def _make_choice(self, outputs):

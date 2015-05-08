@@ -1,5 +1,7 @@
 __author__ = 'Torgeir'
 
+import sys
+
 from environment.flatland import World, Agent
 from filereader.filereader import FileReaderAndFormatter
 from learner.qlearner import QLearner
@@ -57,6 +59,7 @@ class FlatlandQLearner:
 
         gui = FlatlandSimulation(self.world.board, (self.world.dimension[0], self.world.dimension[1]), self.agent, self.q_learner)
         gui.mainloop()
+        sys.exit()
 
     def get_reward(self, board_value):
         # TODO: Improve
@@ -78,7 +81,6 @@ class FlatlandQLearner:
         for k, v in self.q_learner.q.items():
             print(str(k) + ": " + str(v))
 
-import sys
 
 if __name__ == "__main__":
 
