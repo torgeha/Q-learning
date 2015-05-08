@@ -5,6 +5,9 @@ __pycache__/
 # Test files
 test.py
 
+# Log files
+*.log
+
 # C extensions
 *.so
 
