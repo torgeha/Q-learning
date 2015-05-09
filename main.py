@@ -1,7 +1,7 @@
 __author__ = 'Torgeir'
 
 import sys
-
+import argparse
 import logging
 import time
 
@@ -118,11 +118,28 @@ if __name__ == "__main__":
     w = World(buffer.board, (buffer.w, buffer.h))
     a = Agent(w, (buffer.x, buffer.y), buffer.n)
 
-    # TODO: take these as parameters?
     alpha = 0.1
-    gamma = 0.1
+    gamma = 0.6
     epsilon = 0.1
-    nof_iterations = 4000
+    nof_iterations = 2000
+
+    parser = argparse.ArgumentParser()
+
+    # Add arguments here
+    parser.add_argument("-a", help="Learning rate", type=float)
+    parser.add_argument("-g", help="Discount rate", type=float)
+    parser.add_argument("-e", help="Exploration likelihood", type=float)
+    parser.add_argument("-i", help="Number of iterations", type=int)
+    args = parser.parse_args()
+
+    if args.a:
+        alpha=args.a
+    if args.g:
+        gamma=args.g
+    if args.e:
+        epsilon=args.e
+    if args.i:
+        nof_iterations=args.i
 
     ql = QLearner([0, 1, 2, 3], alpha, gamma, epsilon) # actions: n, e, s, w
 
