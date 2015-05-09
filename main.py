@@ -26,14 +26,25 @@ class FlatlandQLearner:
         # Time the run
         start = time.time()
 
+        # Epsilon gradually descends, find how often
+        reduce_e_at = self.nof_iterations / 10
+
         for k in range(self.nof_iterations):
 
             # Print progression to console
             print("K: ", k,
                   ",\t food eaten: ", str(self.agent.food_eaten),
                   ",\t poison eaten: ", str(self.agent.poison_eaten),
+                  ",\t epsilon: ", str(self.q_learner.epsilon),
                   ",\t steps: " + str(self.agent.steps_taken))
             # logging.info("---- " + str(k) + " ------")
+
+            # Find out if epsilon should be reduced
+            if k % reduce_e_at == 0:
+                if self.q_learner.epsilon < 0.002:
+                    self.q_learner.epsilon = 0.0
+                else:
+                    self.q_learner.epsilon /= 2.0
 
             # Reset scenario
             self.restart_scenario()
@@ -94,8 +105,8 @@ class FlatlandQLearner:
             return 1
         if board_value == -1:
             return -1
-        if self.agent.is_done():
-            return 5
+        # if self.agent.is_done():
+        #     return 5
         else:
             return -0.01
 
@@ -109,8 +120,6 @@ class FlatlandQLearner:
             print(str(k) + ": " + str(v))
 
 if __name__ == "__main__":
-
-    # TODO: take parameters from commandline
 
     # Can sepcify path here
     buffer = FileReaderAndFormatter()
