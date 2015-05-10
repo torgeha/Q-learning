@@ -88,6 +88,9 @@ class QLearner:
 
         # return self.q[(state, action)]
 
+    def get_e(self, state, action):
+        pass
+
     def set_q(self, state, action, value):
         self.q[(state, action)] = value
 
@@ -111,6 +114,9 @@ class QLearner:
         # print("best action", self._get_best_action(state_current))
 
         temp = self.alpha * (reward + (self.gamma * self._get_best_action(state_current)) - q_temp)
+
+        # TODO: get e for state_previous and multiply with temp
+
         q_value = q_temp + temp
         # logging.info("--- q_value is computed")
 

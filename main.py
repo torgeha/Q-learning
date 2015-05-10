@@ -82,6 +82,8 @@ class FlatlandQLearner:
                 # print("- Updated q")
                 # logging.info(str(k) + "- Updated q")
 
+                # TODO: Decay all states here
+
         # Visualize the trained agent
         # self._print_q()
 
