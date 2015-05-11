@@ -37,7 +37,6 @@ class FlatlandQLearner:
                   ",\t poison eaten: ", str(self.agent.poison_eaten),
                   ",\t epsilon: ", str(self.q_learner.epsilon),
                   ",\t steps: " + str(self.agent.steps_taken))
-            # logging.info("---- " + str(k) + " ------")
 
             # Find out if epsilon should be reduced
             if k % reduce_e_at == 0:
@@ -53,36 +52,23 @@ class FlatlandQLearner:
 
             while not self.agent.is_done():
 
-                # logging.info(str(k) + "- Start while")
-
                 # Select action to do
                 action = self.q_learner.get_action(state)
-                # print("- action found")
-                # logging.info(str(k) + "- Action found")
+
                 # Update game
                 board_value = self.agent.move(action)
-                # print("- Agent moved")
-                # logging.info(str(k) + "- Agent moved")
 
                 # Remember previous state, used in updating the Q value
                 state_previous = state
 
                 # State after doing action in game
                 state = self.agent.get_state()
-                # print("- State retrieved")
-                # logging.info(str(k) + "- State retrieved")
 
                 # Reward after doing action in game
                 reward = self.get_reward(board_value)
-                # print("- Reward gotten")
-                # logging.info(str(k) + "- Reward gotten")
 
                 # Update q-values
                 self.q_learner.update_q(state, state_previous, action, reward)
-                # print("- Updated q")
-                # logging.info(str(k) + "- Updated q")
-
-                # TODO: Decay all states here
 
         # Visualize the trained agent
         # self._print_q()
@@ -102,7 +88,6 @@ class FlatlandQLearner:
         sys.exit()
 
     def get_reward(self, board_value):
-        # TODO: Improve
         if board_value > 0:
             return 1
         if board_value == -1:
@@ -132,6 +117,8 @@ if __name__ == "__main__":
     alpha = 0.1
     gamma = 0.6
     epsilon = 0.1
+    trace_decay = 0.5
+    backup_states = 6
     nof_iterations = 2000
 
     parser = argparse.ArgumentParser()
@@ -140,6 +127,8 @@ if __name__ == "__main__":
     parser.add_argument("-a", help="Learning rate", type=float)
     parser.add_argument("-g", help="Discount rate", type=float)
     parser.add_argument("-e", help="Exploration likelihood", type=float)
+    parser.add_argument("-td", help="Trace decay factor", type=float)
+    parser.add_argument("-bs", help="States to be backed up", type=int)
     parser.add_argument("-i", help="Number of iterations", type=int)
     args = parser.parse_args()
 
@@ -149,10 +138,14 @@ if __name__ == "__main__":
         gamma=args.g
     if args.e:
         epsilon=args.e
+    if args.td:
+        trace_decay = args.td
+    if args.bs:
+        backup_states = args.bs
     if args.i:
         nof_iterations=args.i
 
-    ql = QLearner([0, 1, 2, 3], alpha, gamma, epsilon) # actions: n, e, s, w
+    ql = QLearner([0, 1, 2, 3], alpha, gamma, epsilon, trace_decay, backup_states) # actions: n, e, s, w
 
     # gui = FlatlandSimulation(buffer.board, (buffer.w, buffer.h), a, ql)
     # gui.mainloop()
