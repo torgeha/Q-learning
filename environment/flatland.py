@@ -12,7 +12,6 @@ class World:
 
     def _init_foods(self):
         # Populate map with all food on board. False since it is not eaten yet.
-        # TODO: can use id of food instead
         d = {}
         for y in range(self.dimension[1]):
             for x in range(self.dimension[0]):
@@ -65,14 +64,12 @@ class Agent:
 
     def is_done(self):
         # Return true if at start_position and all food is eaten
-        # logging.info("---- is done?")
         return self.food_eaten == self.total_food and self.pos == self.start_pos
 
     def get_state(self):
         # Return current state. State consist of position and food eaten
         s = ""
         s += str(self.pos[0]) + "-" + str(self.pos[1]) + ":"
-        # print(self.world.foods_eaten)
         for v in self.world.foods_eaten.values():
             if v:
                 s += "1"
@@ -130,22 +127,3 @@ class Agent:
         board_val = self.world.get_cell_content(self.pos[0], self.pos[1])
         self.visited[key] = True
         return board_val
-
-    # TODO: REMOVE THESE? --------------------------------------------------------
-    def _contains_food(self, x, y):
-        # Only used internally, and on cells not visited
-        key = str(x) + "-" + str(y)
-        if key in self.visited.keys():
-            return 0
-        elif self.world.get_cell_content(x, y) == 1:
-            return 1
-        return 0
-
-    def _contains_poison(self, x, y):
-        # Only used internally, and on cells not visited
-        key = str(x) + "-" + str(y)
-        if key in self.visited.keys():
-            return 0
-        elif self.world.get_cell_content(x, y) == 2:
-            return 1
-        return 0

@@ -11,7 +11,6 @@ from learner.qlearner import QLearner
 from visualization.simulation import FlatlandSimulation
 
 class FlatlandQLearner:
-    # blahblah description
 
     def __init__(self, world, agent, q_learner, nof_iterations):
         self.world = world

@@ -30,16 +30,13 @@ class FileReaderAndFormatter:
         # Replace whitespace with comma
         no_whitespace = file_content.replace(' ', ',')
 
-        # print(no_whitespace)
         # Split the string into lines
         lines_separated = no_whitespace.splitlines()
-        # print("split: ", lines_separated)
 
         # Convert from string list to int list
         properly_formatted = []
         for line in lines_separated:
             properly_formatted.append(list(eval(line)))
-        # print(properly_formatted)
 
         # Extract first line of paramteres
         self.w = properly_formatted[0][0]
@@ -47,12 +44,6 @@ class FileReaderAndFormatter:
         self.x = properly_formatted[0][2]
         self.y = properly_formatted[0][3]
         self.n = properly_formatted[0][4]
-
-        # print(self.w)
-        # print(self.h)
-        # print(self.x)
-        # print(self.y)
-        # print(self.n)
 
         self.board = properly_formatted[1:]
 
@@ -71,14 +62,3 @@ class FileReaderAndFormatter:
             raw_content = f.read()
             # print(raw_content)
         return raw_content
-
-# TODO: Remove testing
-# Testing
-# fr = FileReaderAndFormatter("C:\\Users\\Torgeir\\Dropbox\\AI-subsymbolsk\\project5\\Q-learning\\res\\1-simple.txt")
-# fr = FileReaderAndFormatter()
-# print(fr.w)
-# print(fr.h)
-# print(fr.x)
-# print(fr.y)
-# print(fr.n)
-# print(fr.board)

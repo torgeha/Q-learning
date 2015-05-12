@@ -8,6 +8,9 @@ test.py
 # Log files
 *.log
 
+# Report
+*.pdf
+
 # C extensions
 *.so
 
